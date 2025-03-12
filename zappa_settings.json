@@ -1,0 +1,58 @@
+{
+    "lambda1": {
+        "app_function": "lambda_html.download_pages",
+        "aws_region": "us-east-1",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
+        "profile_name": "default",
+        "project_name": "parcial1-bigdata",
+        "runtime": "python3.10",
+        "s3_bucket": "zappa-parcial-juan123-1",  # Nuevo nombre
+        "keep_warm": false,
+        "apigateway_enabled": false,
+        "manage_roles": false,
+        "role_name": "LabRole",
+        "timeout_seconds": 600,
+        "events": [
+          {
+            "function": "lambda_html.download_pages",
+            "expression": "cron(43 0 12 3 ? 2025)"
+        }]
+    },
+    
+    "lambda2": {
+        "app_function": "lambda_csv.process_html",
+        "aws_region": "us-east-1",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
+        "profile_name": "default",
+        "project_name": "parcial1-bigdata",
+        "runtime": "python3.10",
+        "s3_bucket": "zappa-parcial-juan123-2",  # Nuevo nombre
+        "keep_warm": false,
+        "apigateway_enabled": false,
+        "manage_roles": false,
+        "role_name": "LabRole",
+        "events": [
+          {
+            "function": "lambda_csv.process_html",
+            "event_source": {
+                  "arn": "arn:aws:s3:::landing-casas-juan123",  # Nuevo nombre
+                  "events": [
+                    "s3:ObjectCreated:*"
+                  ]
+               }
+            }]
+        
+    }
+}
