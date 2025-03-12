@@ -28,13 +28,16 @@ def process_html():
                 html_content = html_obj["Body"].read().decode("utf-8")
                 soup = BeautifulSoup(html_content, "html.parser")
                 listings_container = soup.find(
-                    "div",
-                    class_="listings__cards notSponsored"
+                    "div", class_="listings__cards"
                 )
-                listings = (
-                    listings_container.find_all("a", class_="listing listing-card")
-                    if listings_container else []
-                )
+                print("Listings container:", listings_container)
+                if listings_container:
+                    listings = listings_container.find_all(
+                        "a", class_="listing listing-card"
+                    )
+                else:
+                    listings = []
+                print("Listings:", listings)
                 for listing in listings:
                     barrio = listing.get("data-location", "N/A")
                     valor = listing.get("data-price", "N/A")
@@ -83,3 +86,5 @@ def lambda_handler(event, context):
 # Ejecutar el procesamiento local
 if __name__ == "__main__":
     process_html()
+
+# Nueva línea al final del archivo

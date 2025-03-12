@@ -14,7 +14,7 @@ def test_process_html(mock_upload, mock_get, mock_list):
     }
     mock_body = Mock()
     mock_body.read.return_value = (
-        b'<html><body><div class="listings__cards notSponsored">'
+        b'<html><body><div class="listings__cards">'
         b'<a class="listing listing-card" data-location="Barrio1" '
         b'data-price="$100" data-rooms="2" data-floorarea="50">'
         b'<p data-test="bathrooms">3</p></a></div></body></html>'
@@ -30,3 +30,5 @@ def test_process_html(mock_upload, mock_get, mock_list):
         "casas-final-lambda2",
         f"casas_data_{datetime.date.today().strftime('%Y-%m-%d')}.csv"
     )
+
+# Nueva línea al final del archivo

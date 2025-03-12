@@ -5,7 +5,6 @@ import boto3
 
 S3_BUCKET = "landing-casas-lambda1"
 s3_client = boto3.client("s3")
-lambda_client = boto3.client("lambda")
 
 HEADERS = {
     "User-Agent": (
@@ -44,6 +43,13 @@ def download_pages():
     return {"status": "ok"}
 
 
-# Ejecutar la función
+def lambda_handler(event, context):
+    """Punto de entrada de Lambda."""
+    return download_pages()
+
+
+# Ejecutar la función localmente
 if __name__ == "__main__":
     download_pages()
+
+# Nueva línea al final del archivo
