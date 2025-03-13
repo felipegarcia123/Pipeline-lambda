@@ -52,19 +52,28 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Install AWS CLI
+      - name: Install dependencies
         run: |
-          pip install awscli
+          python -m pip install --upgrade pip
+          pip install awscli requests beautifulsoup4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Cambia según tu región
-      - name: Package Lambda functions
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Añadido para credenciales temporales
+          aws-region: us-east-1
+      - name: Package Lambda functions with dependencies
         run: |
-          zip -r lambda_csv.zip lambda_csv.py
-          zip -r lambda_html.zip lambda_html.py
+          mkdir -p lambda_deps
+          pip install requests beautifulsoup4 -t lambda_deps
+          cp lambda_csv.py lambda_deps/
+          cp lambda_html.py lambda_deps/
+          cd lambda_deps
+          zip -r ../lambda_csv.zip .
+          mv lambda_csv.py lambda_html.py .
+          zip -r ../lambda_html.zip .
+          cd ..
       - name: Deploy lambda_csv to AWS Lambda
         run: |
           aws lambda update-function-code \
@@ -75,3 +84,4 @@ jobs:
           aws lambda update-function-code \
             --function-name download-pages-lambda \
             --zip-file fileb://lambda_html.zip
+            
