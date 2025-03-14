@@ -61,18 +61,26 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Añadido para credenciales temporales
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
+      - name: Verify AWS CLI Configuration
+        run: |
+          aws sts get-caller-identity
       - name: Package Lambda functions with dependencies
         run: |
+          # Limpia el directorio lambda_deps si existe
+          rm -rf lambda_deps
           mkdir -p lambda_deps
+          # Instala dependencias
           pip install requests beautifulsoup4 -t lambda_deps
+          # Copia ambos archivos para el primer zip (lambda_csv.zip)
           cp lambda_csv.py lambda_deps/
           cp lambda_html.py lambda_deps/
+          # Crea lambda_csv.zip con lambda_csv.py y dependencias
           cd lambda_deps
-          zip -r ../lambda_csv.zip .
-          mv lambda_csv.py lambda_html.py .
-          zip -r ../lambda_html.zip .
+          zip -r ../lambda_csv.zip . -x "lambda_html.py"
+          # Crea lambda_html.zip con lambda_html.py y dependencias
+          zip -r ../lambda_html.zip . -x "lambda_csv.py"
           cd ..
       - name: Deploy lambda_csv to AWS Lambda
         run: |
